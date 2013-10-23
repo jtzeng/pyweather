@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="PyWeather : Weather in your terminal, with ANSI colors and Unicode symbols" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>PyWeather</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/wktr/pyweather">View on GitHub</a>
+
+          <h1 id="project_title">PyWeather</h1>
+          <h2 id="project_tagline">Weather in your terminal, with ANSI colors and Unicode symbols</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/wktr/pyweather/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/wktr/pyweather/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h2>
+<a name="description" class="anchor" href="#description"><span class="octicon octicon-link"></span></a>Description</h2>
+
+<p>PyWeather is a script for displaying the current weather conditions in your terminal, with support for ANSI colors and Unicode symbols. It is a Python port of AnsiWeather, which is developed by Frederic Cambus and can be found here: <a href="https://github.com/fcambus/ansiweather">https://github.com/fcambus/ansiweather</a>.</p>
+
+<p><img src="http://www.cambus.net/content/2013/10/ansiweather-moscow.png" alt="AnsiWeather Screenshot"></p>
+
+<p>Weather data comes from the <code>OpenWeatherMap</code> free weather API.</p>
+
+<h2>
+<a name="requirements" class="anchor" href="#requirements"><span class="octicon octicon-link"></span></a>Requirements</h2>
+
+<p>PyWeather requires the following dependency: </p>
+
+<ul>
+<li>Python 2.7</li>
+</ul><p>The intent in creating PyWeather is to offer an alternative which has only one dependency: Python. A standard Python installation (which is prevalent and offered on OS X and almost any other *nix box) is all that is needed.</p>
+
+<h2>
+<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
+
+<p>After cloning the repository, simply invoke the script by typing:</p>
+
+<pre><code>./pyweather
+</code></pre>
+
+<h2>
+<a name="configuration" class="anchor" href="#configuration"><span class="octicon octicon-link"></span></a>Configuration</h2>
+
+<p>The following configuration options are available and should be set according to your location and preferences.</p>
+
+<p>Config options can also be set in ~/.pyweatherrc</p>
+
+<p>Example : <code>~/.pyweatherrc</code></p>
+
+<pre><code>[main]
+location: New York,NY
+units: metric
+symbols: yes
+
+[colors]
+...
+
+[icons]
+...
+</code></pre>
+
+<p>Other options can be found in the script; they are easy to set and self-explanatory.</p>
+
+<h2>
+<a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h2>
+
+<p>PyWeather is released under the BSD 3-Clause license (which AnsiWeather is released under). See <code>LICENSE</code> file for details.</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">PyWeather maintained by <a href="https://github.com/wktr">wktr</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
