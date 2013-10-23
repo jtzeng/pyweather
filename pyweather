@@ -1,0 +1,98 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+# Port of 'ansiweather': https://github.com/fcambus/ansiweather
+
+import ConfigParser
+import json
+import os
+import time
+import urllib2
+
+# Read and process the config, if any.
+# TODO: This is hideous.
+cfg_path = os.path.expanduser('~') + '/.pyweatherrc'
+cfg = ConfigParser.SafeConfigParser()
+
+cfg.add_section('main')
+cfg.set('main', 'location', 'Beijing,CN')
+cfg.set('main', 'units', 'imperial')
+cfg.set('main', 'symbols', 'yes')
+
+cfg.add_section('colors')
+cfg.set('colors', 'background', '\033[44m')
+cfg.set('colors', 'text', '\033[36;1m')
+cfg.set('colors', 'data', '\033[33;1m')
+cfg.set('colors', 'delimiter', '\033[35m=>')
+cfg.set('colors', 'dashes', '\033[34m-')
+
+cfg.add_section('icons')
+cfg.set('icons', 'sun', '\033[33;1m\xe2\x98\x80')
+cfg.set('icons', 'moon', '\033[36m\xe2\x98\xbd')
+cfg.set('icons', 'clouds', '\033[37;1m\xe2\x98\x81')
+cfg.set('icons', 'rain', '\xe2\x98\x94')
+
+cfg.read(cfg_path)
+
+location = cfg.get('main', 'location')
+units = cfg.get('main', 'units')
+symbols = cfg.getboolean('main', 'symbols')
+
+background = cfg.get('colors', 'background')
+text = cfg.get('colors', 'text')
+data = cfg.get('colors', 'data')
+delimiter = cfg.get('colors', 'delimiter')
+dashes = cfg.get('colors', 'dashes')
+
+sun = cfg.get('icons', 'sun')
+moon = cfg.get('icons', 'moon')
+clouds = cfg.get('icons', 'clouds')
+rain = cfg.get('icons', 'rain')
+
+api_url = 'http://api.openweathermap.org/data/2.5/weather?q=%s&units=%s'
+reset = '\033[0m'
+
+# Set the scale.
+scale = ('°F' if units == 'imperial' else '°C').decode('utf-8')
+
+# Fetch weather data.
+u = urllib2.urlopen(api_url % (location, units))
+lines = u.read()
+u.close()
+winfo = json.loads(lines)
+
+# Process weather data.
+city = winfo['name']
+temperature = winfo['main']['temp']
+humidity = winfo['main']['humidity']
+pressure = winfo['main']['pressure']
+sky = winfo['weather'][0]['main']
+sunrise = winfo['sys']['sunrise']
+sunset = winfo['sys']['sunset']
+
+# Set the period.
+now = int(time.time())
+period = 'night' if now >= sunset or now <= sunrise else 'day'
+
+# Set the icons.
+if sky == 'Clear':
+	icon = moon if period == 'night' else sun
+elif sky == 'Clouds':
+	icon = clouds
+elif sky == 'Rain':
+	icon = rain
+else:
+	icon = '?'
+
+if not symbols:
+	icon = ''
+icon = icon.decode('utf-8')
+
+# Display current weather.
+print (
+	'%s%s Current weather in %s %s%s %s %s %s%s%s Humidity ' +
+	'%s%s %s %% %s%s Pressure %s%s %s hPa%s'
+) % (
+	background, text, city, delimiter, data, temperature, scale, icon, dashes,
+	text, delimiter, data, humidity, dashes, text, delimiter, data, pressure,
+	reset
+)
