@@ -84,7 +84,7 @@ elif sky == 'Rain':
 elif sky == 'Fog':
 	icon = fog
 else:
-	icon = '?'
+	icon = sky
 
 if not symbols:
 	icon = ''
