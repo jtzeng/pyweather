@@ -32,6 +32,9 @@ cfg.set('icons', 'moon', '\033[36m\xe2\x98\xbd')
 cfg.set('icons', 'clouds', '\033[37;1m\xe2\x98\x81')
 cfg.set('icons', 'rain', '\xe2\x98\x94')
 cfg.set('icons', 'fog', '\xe2\x96\x92')
+cfg.set('icons', 'mist', '\033[37m\xe2\x96\x92')
+cfg.set('icons', 'snow', '\033[37m\xe2\x9d\x84')
+cfg.set('icons', 'thunderstorm', '\033[33m\xe2\x9a\xa1')
 
 cfg.read(cfg_path)
 
@@ -50,6 +53,9 @@ moon = cfg.get('icons', 'moon')
 clouds = cfg.get('icons', 'clouds')
 rain = cfg.get('icons', 'rain')
 fog = cfg.get('icons', 'fog')
+mist = cfg.get('icons', 'mist')
+snow = cfg.get('icons', 'snow')
+thunderstorm = cfg.get('icons', 'thunderstorm')
 
 api_url = 'http://api.openweathermap.org/data/2.5/weather?q=%s&units=%s'
 reset = '\033[0m'
@@ -76,16 +82,20 @@ sunset = winfo['sys']['sunset']
 now = int(time.time())
 period = 'night' if now >= sunset or now <= sunrise else 'day'
 
+icons = {
+	'Clear': moon if period == 'night' else sun,
+	'Clouds': clouds,
+	'Rain': rain,
+	'Fog': fog,
+	'Mist': mist,
+	'Snow': snow,
+	'Thunderstorm': thunderstorm
+}
+
 # Set the icons.
-if sky == 'Clear':
-	icon = moon if period == 'night' else sun
-elif sky == 'Clouds':
-	icon = clouds
-elif sky == 'Rain':
-	icon = rain
-elif sky == 'Fog':
-	icon = fog
-else:
+try:
+	icon = icons[sky]
+except KeyError:
 	icon = sky
 
 if not symbols:
@@ -96,10 +106,10 @@ icon = icon.decode('utf-8')
 def print_weather(temperature, humidity, pressure):
 	sys.stdout.write('%s%s ' % (background, text))
 	sys.stdout.write('Current weather in %s %s%s %s %s %s %s%s ' % (
-			city, delimiter, data, temperature, scale, icon, dashes, text
+		city, delimiter, data, temperature, scale, icon, dashes, text
 	))
 	sys.stdout.write('Humidity %s%s %s %% %s%s ' % (delimiter, data,
-			humidity, dashes, text
+		humidity, dashes, text
 	))
 	sys.stdout.write('Pressure %s%s %s hPa%s\n' % (delimiter, data,
 		pressure, reset
