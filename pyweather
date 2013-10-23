@@ -5,12 +5,13 @@
 import ConfigParser
 import json
 import os
+import sys
 import time
 import urllib2
 
 # Read and process the config, if any.
 # TODO: This is hideous.
-cfg_path = os.path.expanduser('~') + '/.pyweatherrc'
+cfg_path = '%s/.pyweatherrc' % os.path.expanduser('~')
 cfg = ConfigParser.SafeConfigParser()
 
 cfg.add_section('main')
@@ -48,12 +49,13 @@ sun = cfg.get('icons', 'sun')
 moon = cfg.get('icons', 'moon')
 clouds = cfg.get('icons', 'clouds')
 rain = cfg.get('icons', 'rain')
+fog = cfg.get('icons', 'fog')
 
 api_url = 'http://api.openweathermap.org/data/2.5/weather?q=%s&units=%s'
 reset = '\033[0m'
 
 # Set the scale.
-scale = ('°F' if units == 'imperial' else '°C').decode('utf-8')
+scale = u'\u00b0%s' % ('F' if units == 'imperial' else 'C')
 
 # Fetch weather data.
 u = urllib2.urlopen(api_url % (location, units))
@@ -87,15 +89,22 @@ else:
 	icon = sky
 
 if not symbols:
-	icon = ''
+	icon = sky
 icon = icon.decode('utf-8')
 
+# Still ugly, but better.
+def print_weather(temperature, humidity, pressure):
+	sys.stdout.write('%s%s ' % (background, text))
+	sys.stdout.write('Current weather in %s %s%s %s %s %s %s%s ' % (
+			city, delimiter, data, temperature, scale, icon, dashes, text
+	))
+	sys.stdout.write('Humidity %s%s %s %% %s%s ' % (delimiter, data,
+			humidity, dashes, text
+	))
+	sys.stdout.write('Pressure %s%s %s hPa%s\n' % (delimiter, data,
+		pressure, reset
+	))
+	sys.stdout.flush()
+
 # Display current weather.
-print (
-	'%s%s Current weather in %s %s%s %s %s %s%s%s Humidity ' +
-	'%s%s %s %% %s%s Pressure %s%s %s hPa%s'
-) % (
-	background, text, city, delimiter, data, temperature, scale, icon, dashes,
-	text, delimiter, data, humidity, dashes, text, delimiter, data, pressure,
-	reset
-)
+print_weather(temperature, humidity, pressure)
