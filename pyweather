@@ -30,6 +30,7 @@ cfg.set('icons', 'sun', '\033[33;1m\xe2\x98\x80')
 cfg.set('icons', 'moon', '\033[36m\xe2\x98\xbd')
 cfg.set('icons', 'clouds', '\033[37;1m\xe2\x98\x81')
 cfg.set('icons', 'rain', '\xe2\x98\x94')
+cfg.set('icons', 'fog', '\xe2\x96\x92')
 
 cfg.read(cfg_path)
 
@@ -80,6 +81,8 @@ elif sky == 'Clouds':
 	icon = clouds
 elif sky == 'Rain':
 	icon = rain
+elif sky == 'Fog':
+	icon = fog
 else:
 	icon = '?'
 
