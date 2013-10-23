@@ -1,7 +1,6 @@
 ## Description
 
-PyWeather is a script for displaying the current weather conditions in your
-terminal, with support for ANSI colors and Unicode symbols. It is a Python port of AnsiWeather, which is developed by Frederic Cambus and can be found here: https://github.com/fcambus/ansiweather.
+PyWeather is a script for displaying the current weather conditions in your terminal, with support for ANSI colors and Unicode symbols. It is a Python port of AnsiWeather, which is developed by Frederic Cambus and can be found here: https://github.com/fcambus/ansiweather.
 
 ![AnsiWeather Screenshot](http://www.cambus.net/content/2013/10/ansiweather-moscow.png)
 
@@ -23,8 +22,7 @@ After cloning the repository, simply invoke the script by typing:
 
 ## Configuration
 
-The following configuration options are available and should be set according
-to your location and preferences.
+The following configuration options are available and should be set according to your location and preferences.
 
 Config options can also be set in ~/.pyweatherrc
 
@@ -45,5 +43,4 @@ Other options can be found in the script; they are easy to set and self-explanat
 
 ## License
 
-PyWeather is released under the BSD 3-Clause license (which AnsiWeather is released under).
-See `LICENSE` file for details.
+PyWeather is released under the BSD 3-Clause license (which AnsiWeather is released under). See `LICENSE` file for details.
