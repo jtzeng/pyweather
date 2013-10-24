@@ -2,7 +2,7 @@
 
 PyWeather is a script for displaying the current weather conditions in your terminal, with support for ANSI colors and Unicode symbols. It is a Python port of AnsiWeather, which is developed by Frederic Cambus and can be found here: https://github.com/fcambus/ansiweather.
 
-![AnsiWeather Screenshot](http://www.cambus.net/content/2013/10/ansiweather-moscow.png)
+![PyWeather Screenshot](http://oi43.tinypic.com/swtouo.jpg)
 
 Weather data comes from the `OpenWeatherMap` free weather API.
 
