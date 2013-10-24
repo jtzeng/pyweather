@@ -37,6 +37,7 @@ cfg.set('colors', 'delimiter', '%s=>' % MAGENTA)
 cfg.set('colors', 'dashes', '\n') # '\033[34m-'
 cfg.set('colors', 'city_col', RED)
 cfg.set('colors', 'sym_col', GREEN)
+# cfg.set('colors', 'time_fmt', r'%a %b %d %H:%M:%S %Z %Y') # E MMM dd kk:mm:ss z yyyy
 
 cfg.add_section('icons')
 cfg.set('icons', 'sun', '\033[33;1m\xe2\x98\x80')
@@ -61,6 +62,8 @@ delimiter = cfg.get('colors', 'delimiter')
 dashes = cfg.get('colors', 'dashes')
 city_col = cfg.get('colors', 'city_col')
 sym_col = cfg.get('colors', 'sym_col')
+# time_fmt = cfg.get('colors', 'time_fmt')
+time_fmt = '%a %b %d %H:%M:%S GMT %Y'
 
 sun = cfg.get('icons', 'sun')
 moon = cfg.get('icons', 'moon')
@@ -98,6 +101,7 @@ sky = winfo['weather'][0]['main']
 sunrise = winfo['sys']['sunrise']
 sunset = winfo['sys']['sunset']
 wind = winfo['wind']['speed']
+dt = winfo['dt']
 
 # Set the period.
 now = int(time.time())
@@ -126,6 +130,9 @@ icon = icon.decode('utf-8')
 # Still ugly, but better.
 def print_weather(temperature, humidity, pressure):
 	sys.stdout.write('%s%s ' % (background, text))
+	sys.stdout.write('Time updated %s%s %s %s%s ' % (delimiter, data,
+		time.strftime(time_fmt, time.gmtime(dt)), dashes, text
+	))
 	sys.stdout.write('Current weather in %s%s %s%s %s %s%s %s %s%s ' % (
 		city_col, city, delimiter, data, temperature, sym_col, scale,
 		icon, dashes, text
