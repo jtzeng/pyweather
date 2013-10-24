@@ -9,6 +9,16 @@ import sys
 import time
 import urllib2
 
+BLACK = '\033[30;1m'
+RED = '\033[31;1m'
+GREEN = '\033[32;1m'
+YELLOW = '\033[33;1m'
+BLUE = '\033[34;1m'
+MAGENTA = '\033[35;1m'
+CYAN = '\033[36;1m'
+WHITE = '\033[37;1m'
+RESET = '\033[0m'
+
 # Read and process the config, if any.
 # TODO: This is hideous.
 cfg_path = '%s/.pyweatherrc' % os.path.expanduser('~')
@@ -20,11 +30,13 @@ cfg.set('main', 'units', 'imperial')
 cfg.set('main', 'symbols', 'yes')
 
 cfg.add_section('colors')
-cfg.set('colors', 'background', '\033[44m')
-cfg.set('colors', 'text', '\033[36;1m')
-cfg.set('colors', 'data', '\033[33;1m')
-cfg.set('colors', 'delimiter', '\033[35m=>')
-cfg.set('colors', 'dashes', '\033[34m-')
+cfg.set('colors', 'background', '') # '\033[44m'
+cfg.set('colors', 'text', BLUE)
+cfg.set('colors', 'data', YELLOW)
+cfg.set('colors', 'delimiter', '%s=>' % MAGENTA)
+cfg.set('colors', 'dashes', '\n') # '\033[34m-'
+cfg.set('colors', 'city_col', RED)
+cfg.set('colors', 'sym_col', GREEN)
 
 cfg.add_section('icons')
 cfg.set('icons', 'sun', '\033[33;1m\xe2\x98\x80')
@@ -47,6 +59,8 @@ text = cfg.get('colors', 'text')
 data = cfg.get('colors', 'data')
 delimiter = cfg.get('colors', 'delimiter')
 dashes = cfg.get('colors', 'dashes')
+city_col = cfg.get('colors', 'city_col')
+sym_col = cfg.get('colors', 'sym_col')
 
 sun = cfg.get('icons', 'sun')
 moon = cfg.get('icons', 'moon')
@@ -58,7 +72,6 @@ snow = cfg.get('icons', 'snow')
 thunderstorm = cfg.get('icons', 'thunderstorm')
 
 api_url = 'http://api.openweathermap.org/data/2.5/weather?q=%s&units=%s'
-reset = '\033[0m'
 
 # Process CLI args (should be done with argparse later on).
 if len(sys.argv) == 2:
@@ -113,17 +126,18 @@ icon = icon.decode('utf-8')
 # Still ugly, but better.
 def print_weather(temperature, humidity, pressure):
 	sys.stdout.write('%s%s ' % (background, text))
-	sys.stdout.write('Current weather in %s %s%s %s %s %s %s%s ' % (
-		city, delimiter, data, temperature, scale, icon, dashes, text
+	sys.stdout.write('Current weather in %s%s %s%s %s %s%s %s %s%s ' % (
+		city_col, city, delimiter, data, temperature, sym_col, scale,
+		icon, dashes, text
 	))
-	sys.stdout.write('Humidity %s%s %s %% %s%s ' % (delimiter, data,
-		humidity, dashes, text
+	sys.stdout.write('Humidity %s%s %s %s%% %s%s ' % (delimiter, data,
+		humidity, sym_col, dashes, text
 	))
-	sys.stdout.write('Wind %s%s %s %s %s%s ' % (delimiter, data, wind,
-		speed_unit, dashes, text
+	sys.stdout.write('Wind %s%s %s %s%s %s%s ' % (delimiter, data, wind,
+		sym_col, speed_unit, dashes, text
 	))
-	sys.stdout.write('Pressure %s%s %s hPa%s\n' % (delimiter, data,
-		pressure, reset
+	sys.stdout.write('Pressure %s%s %s %shPa%s\n' % (delimiter, data,
+		pressure, sym_col, RESET
 	))
 	sys.stdout.flush()
 
