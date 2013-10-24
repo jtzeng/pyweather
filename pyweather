@@ -67,6 +67,9 @@ if len(sys.argv) == 2:
 # Set the scale.
 scale = u'\u00b0%s' % ('F' if units == 'imperial' else 'C')
 
+# Set the wind speed unit.
+speed_unit = 'mph' if units == 'imperial' else 'm/s'
+
 # Fetch weather data.
 u = urllib2.urlopen(api_url % (location, units))
 lines = u.read()
@@ -81,6 +84,7 @@ pressure = winfo['main']['pressure']
 sky = winfo['weather'][0]['main']
 sunrise = winfo['sys']['sunrise']
 sunset = winfo['sys']['sunset']
+wind = winfo['wind']['speed']
 
 # Set the period.
 now = int(time.time())
@@ -114,6 +118,9 @@ def print_weather(temperature, humidity, pressure):
 	))
 	sys.stdout.write('Humidity %s%s %s %% %s%s ' % (delimiter, data,
 		humidity, dashes, text
+	))
+	sys.stdout.write('Wind %s%s %s %s %s%s ' % (delimiter, data, wind,
+		speed_unit, dashes, text
 	))
 	sys.stdout.write('Pressure %s%s %s hPa%s\n' % (delimiter, data,
 		pressure, reset
