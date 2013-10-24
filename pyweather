@@ -60,6 +60,10 @@ thunderstorm = cfg.get('icons', 'thunderstorm')
 api_url = 'http://api.openweathermap.org/data/2.5/weather?q=%s&units=%s'
 reset = '\033[0m'
 
+# Process CLI args (should be done with argparse later on).
+if len(sys.argv) == 2:
+	location = sys.argv[1]
+
 # Set the scale.
 scale = u'\u00b0%s' % ('F' if units == 'imperial' else 'C')
 
