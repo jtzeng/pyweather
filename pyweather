@@ -63,7 +63,7 @@ dashes = cfg.get('colors', 'dashes')
 city_col = cfg.get('colors', 'city_col')
 sym_col = cfg.get('colors', 'sym_col')
 # time_fmt = cfg.get('colors', 'time_fmt')
-time_fmt = '%a %b %d %H:%M:%S GMT %Y'
+time_fmt = '%a %b %d %H:%M:%S %Z %Y'
 
 sun = cfg.get('icons', 'sun')
 moon = cfg.get('icons', 'moon')
@@ -131,7 +131,7 @@ icon = icon.decode('utf-8')
 def print_weather(temperature, humidity, pressure):
 	sys.stdout.write('%s%s ' % (background, text))
 	sys.stdout.write('Time updated %s%s %s %s%s ' % (delimiter, data,
-		time.strftime(time_fmt, time.gmtime(dt)), dashes, text
+		time.strftime(time_fmt, time.localtime(dt)), dashes, text
 	))
 	sys.stdout.write('Current weather in %s%s %s%s %s %s%s %s %s%s ' % (
 		city_col, city, delimiter, data, temperature, sym_col, scale,
