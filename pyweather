@@ -105,10 +105,10 @@ dt = winfo['dt']
 
 # Set the period.
 now = int(time.time())
-period = 'night' if now >= sunset or now <= sunrise else 'day'
+period = 'Night' if now >= sunset or now <= sunrise else 'Day'
 
 icons = {
-	'Clear': moon if period == 'night' else sun,
+	'Clear': moon if period == 'Night' else sun,
 	'Clouds': clouds,
 	'Rain': rain,
 	'Fog': fog,
@@ -133,9 +133,9 @@ def print_weather(temperature, humidity, pressure):
 	sys.stdout.write('Time updated %s%s %s %s%s ' % (delimiter, data,
 		time.strftime(time_fmt, time.localtime(dt)), dashes, text
 	))
-	sys.stdout.write('Current weather in %s%s %s%s %s %s%s %s %s%s ' % (
+	sys.stdout.write('Current weather in %s%s %s%s %s %s%s %s  %s%s %s%s ' % (
 		city_col, city, delimiter, data, temperature, sym_col, scale,
-		icon, dashes, text
+		icon, WHITE, period, dashes, text
 	))
 	sys.stdout.write('Humidity %s%s %s %s%% %s%s ' % (delimiter, data,
 		humidity, sym_col, dashes, text
