@@ -16,30 +16,19 @@ The intent in creating PyWeather is to offer an alternative which has only one d
 
 ## Usage
 
-After cloning the repository, simply invoke the script by typing:
+	./pyweather [-u imperial|metric|kelvin] [-t] city[,country]
 
-	./pyweather
+Use the '-t' flag to disable symbols.
 
-## Configuration
+The final argument, which is required, can be done in a numerous amount of ways. The country or country code is usually optional, but will help the weather API reduce ambiguity.
 
-The following configuration options are available and should be set according to your location and preferences.
+For example:
 
-Config options can also be set in ~/.pyweatherrc
+	./pyweather -u metric "New York,NY" "Beijing,CN" "London,UK"
 
-Example : `~/.pyweatherrc`
+## Contributing
 
-	[main]
-	location: New York,NY
-	units: metric
-	symbols: yes
-
-	[colors]
-	...
-
-	[icons]
-	...
-
-Other options can be found in the script; they are easy to set and self-explanatory.
+Help contribute to PyWeather by submitting a pull request or posting an issue! :)
 
 ## License
 
