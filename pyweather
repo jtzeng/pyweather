@@ -2,12 +2,13 @@
 # -*- coding: utf-8 -*-
 # Port of 'ansiweather': https://github.com/fcambus/ansiweather
 
-import ConfigParser
 import json
-import os
 import sys
 import time
 import urllib2
+
+API_URL = 'http://api.openweathermap.org/data/2.5/weather?q=%s&units=%s'
+TIME_FMT = '%a %b %d %H:%M:%S %Z %Y'
 
 BLACK = '\033[30;1m'
 RED = '\033[31;1m'
@@ -19,134 +20,104 @@ CYAN = '\033[36;1m'
 WHITE = '\033[37;1m'
 RESET = '\033[0m'
 
-# Read and process the config, if any.
-# TODO: This is hideous.
-cfg_path = '%s/.pyweatherrc' % os.path.expanduser('~')
-cfg = ConfigParser.SafeConfigParser()
+BG_COL = ''
+TEXT_COL = BLUE
+SND_COL = WHITE
+DATA_COL = YELLOW
+DELIM = '%s=>' % MAGENTA
+CITY_COL = RED
+SYM_COL = GREEN
 
-cfg.add_section('main')
-cfg.set('main', 'location', 'Beijing,CN')
-cfg.set('main', 'units', 'imperial')
-cfg.set('main', 'symbols', 'yes')
+SUN = '\033[33;1m\xe2\x98\x80'
+MOON = '\033[36m\xe2\x98\xbd'
+CLOUDS = '\033[37;1m\xe2\x98\x81'
+RAIN = '\xe2\x98\x94'
+FOG = '\xe2\x96\x92'
+MIST = '\033[37m\xe2\x96\x92'
+SNOW = '\033[37m\xe2\x9d\x84'
+THUNDERSTORM = '\033[33m\xe2\x9a\xa1'
 
-cfg.add_section('colors')
-cfg.set('colors', 'background', '') # '\033[44m'
-cfg.set('colors', 'text', BLUE)
-cfg.set('colors', 'data', YELLOW)
-cfg.set('colors', 'delimiter', '%s=>' % MAGENTA)
-cfg.set('colors', 'dashes', '\n') # '\033[34m-'
-cfg.set('colors', 'city_col', RED)
-cfg.set('colors', 'sym_col', GREEN)
-# cfg.set('colors', 'time_fmt', r'%a %b %d %H:%M:%S %Z %Y') # E MMM dd kk:mm:ss z yyyy
+def get_scale(units):
+	conv = {'imperial': 'F', 'metric': 'C'}
+	return u'\u00b0%s' % (conv[units] if conv.has_key(units) else 'K')
 
-cfg.add_section('icons')
-cfg.set('icons', 'sun', '\033[33;1m\xe2\x98\x80')
-cfg.set('icons', 'moon', '\033[36m\xe2\x98\xbd')
-cfg.set('icons', 'clouds', '\033[37;1m\xe2\x98\x81')
-cfg.set('icons', 'rain', '\xe2\x98\x94')
-cfg.set('icons', 'fog', '\xe2\x96\x92')
-cfg.set('icons', 'mist', '\033[37m\xe2\x96\x92')
-cfg.set('icons', 'snow', '\033[37m\xe2\x9d\x84')
-cfg.set('icons', 'thunderstorm', '\033[33m\xe2\x9a\xa1')
+def get_speed_unit(units):
+	return 'mph' if units == 'imperial' else 'm/s'
 
-cfg.read(cfg_path)
+def get_period(sunrise, sunset):
+	now = int(time.time())
+	return 'Night' if now >= sunset or now <= sunrise else 'Day'
 
-location = cfg.get('main', 'location')
-units = cfg.get('main', 'units')
-symbols = cfg.getboolean('main', 'symbols')
+def get_api_data(location, units):
+	u = urllib2.urlopen(API_URL % (location, units))
+	lines = u.read()
+	u.close()
+	return lines
 
-background = cfg.get('colors', 'background')
-text = cfg.get('colors', 'text')
-data = cfg.get('colors', 'data')
-delimiter = cfg.get('colors', 'delimiter')
-dashes = cfg.get('colors', 'dashes')
-city_col = cfg.get('colors', 'city_col')
-sym_col = cfg.get('colors', 'sym_col')
-# time_fmt = cfg.get('colors', 'time_fmt')
-time_fmt = '%a %b %d %H:%M:%S %Z %Y'
+def get_icon(period, sky, units):
+	conv = {
+		'Clear': MOON if period == 'Night' else SUN,
+		'Clouds': CLOUDS,
+		'Rain': RAIN,
+		'Fog': FOG,
+		'Mist': MIST,
+		'Snow': SNOW,
+		'Thunderstorm': THUNDERSTORM
+	}
+	if not symbols:
+		return sky
+	return conv[sky].decode('utf-8') if conv.has_key(sky) else sky
 
-sun = cfg.get('icons', 'sun')
-moon = cfg.get('icons', 'moon')
-clouds = cfg.get('icons', 'clouds')
-rain = cfg.get('icons', 'rain')
-fog = cfg.get('icons', 'fog')
-mist = cfg.get('icons', 'mist')
-snow = cfg.get('icons', 'snow')
-thunderstorm = cfg.get('icons', 'thunderstorm')
+def process_weather(location, units, symbols):
+	# Set the scale.
+	scale = get_scale(units)
 
-api_url = 'http://api.openweathermap.org/data/2.5/weather?q=%s&units=%s'
+	# Set the wind speed unit.
+	speed_unit = get_speed_unit(units)
 
-# Process CLI args (should be done with argparse later on).
-if len(sys.argv) == 2:
-	location = sys.argv[1]
+	# Fetch weather data.
+	lines = get_api_data(location, units)
+	winfo = json.loads(lines)
 
-# Set the scale.
-scale = u'\u00b0%s' % ('F' if units == 'imperial' else 'C')
+	# Process weather data.
+	city = winfo['name']
+	temp = winfo['main']['temp']
+	humidity = winfo['main']['humidity']
+	pressure = winfo['main']['pressure']
+	sky = winfo['weather'][0]['main']
+	sunrise = winfo['sys']['sunrise']
+	sunset = winfo['sys']['sunset']
+	wind = winfo['wind']['speed']
+	dt = winfo['dt']
 
-# Set the wind speed unit.
-speed_unit = 'mph' if units == 'imperial' else 'm/s'
+	# Set the period.
+	period = get_period(sunrise, sunset)
 
-# Fetch weather data.
-u = urllib2.urlopen(api_url % (location, units))
-lines = u.read()
-u.close()
-winfo = json.loads(lines)
+	# Set the icons.
+	icon = get_icon(period, sky, units)
 
-# Process weather data.
-city = winfo['name']
-temperature = winfo['main']['temp']
-humidity = winfo['main']['humidity']
-pressure = winfo['main']['pressure']
-sky = winfo['weather'][0]['main']
-sunrise = winfo['sys']['sunrise']
-sunset = winfo['sys']['sunset']
-wind = winfo['wind']['speed']
-dt = winfo['dt']
+	write = sys.stdout.write
+	write('%s%s ' % (BG_COL, TEXT_COL))
 
-# Set the period.
-now = int(time.time())
-period = 'Night' if now >= sunset or now <= sunrise else 'Day'
+	tms = time.strftime(TIME_FMT, time.localtime(dt))
+	write('Time updated %s%s %s \n%s ' % (DELIM, DATA_COL, tms, TEXT_COL))
 
-icons = {
-	'Clear': moon if period == 'Night' else sun,
-	'Clouds': clouds,
-	'Rain': rain,
-	'Fog': fog,
-	'Mist': mist,
-	'Snow': snow,
-	'Thunderstorm': thunderstorm
-}
+	write('Current weather in %s%s %s%s %s %s%s %s  %s%s \n%s ' % (CITY_COL,
+		city, DELIM, DATA_COL, temp, SYM_COL, scale, icon, SND_COL,
+		period, TEXT_COL))
 
-# Set the icons.
-try:
-	icon = icons[sky]
-except KeyError:
-	icon = sky
+	write('Humidity %s%s %s %s%% \n%s ' % (DELIM, DATA_COL, humidity, SYM_COL,
+		TEXT_COL))
 
-if not symbols:
-	icon = sky
-icon = icon.decode('utf-8')
+	write('Wind %s%s %s %s%s \n%s ' % (DELIM, DATA_COL, wind, SYM_COL,
+		speed_unit, TEXT_COL))
 
-# Still ugly, but better.
-def print_weather(temperature, humidity, pressure):
-	sys.stdout.write('%s%s ' % (background, text))
-	sys.stdout.write('Time updated %s%s %s %s%s ' % (delimiter, data,
-		time.strftime(time_fmt, time.localtime(dt)), dashes, text
-	))
-	sys.stdout.write('Current weather in %s%s %s%s %s %s%s %s  %s%s %s%s ' % (
-		city_col, city, delimiter, data, temperature, sym_col, scale,
-		icon, WHITE, period, dashes, text
-	))
-	sys.stdout.write('Humidity %s%s %s %s%% %s%s ' % (delimiter, data,
-		humidity, sym_col, dashes, text
-	))
-	sys.stdout.write('Wind %s%s %s %s%s %s%s ' % (delimiter, data, wind,
-		sym_col, speed_unit, dashes, text
-	))
-	sys.stdout.write('Pressure %s%s %s %shPa%s\n' % (delimiter, data,
-		pressure, sym_col, RESET
-	))
-	sys.stdout.flush()
+	write('Pressure %s%s %s %shPa' % (DELIM, DATA_COL, pressure, SYM_COL))
+	print RESET
 
 # Display current weather.
-print_weather(temperature, humidity, pressure)
+if __name__ == '__main__':
+	location = 'New York,NY'
+	units = 'imperial'
+	symbols = True
+	process_weather(location, units, symbols)
