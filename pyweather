@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # Port of 'ansiweather': https://github.com/fcambus/ansiweather
 
+import getopt
 import json
 import sys
 import time
@@ -117,7 +118,18 @@ def process_weather(location, units, symbols):
 
 # Display current weather.
 if __name__ == '__main__':
-	location = 'New York,NY'
+	opts, args = getopt.getopt(sys.argv[1:], 'u:t')
 	units = 'imperial'
 	symbols = True
-	process_weather(location, units, symbols)
+	for opt, val in opts:
+		if opt == '-u':
+			units = val
+		elif opt == '-t':
+			symbols = False
+	if not args:
+		print ('usage: %s [-u imperial|metric|kelvin] [-t]'
+			+ ' city[,country]') % sys.argv[0]
+		print 'example: %s -u metric "New York,NY" "Beijing,CN"' % sys.argv[0]
+		exit()
+	for location in args:
+		process_weather(location, units, symbols)
