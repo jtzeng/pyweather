@@ -69,6 +69,10 @@ def get_icon(period, sky, units):
 		return sky
 	return conv[sky].decode('utf-8') if conv.has_key(sky) else sky
 
+def get_wind_dir(wind_deg):
+	directions = 'N NNE NE ENE E ESE SE SSE S SSW SW WSW W WNW NW NNW'.split()
+	return directions[int((wind_deg + 11.25) / 22.5 % 16)]
+
 def process_weather(location, units, symbols):
 	# Set the scale.
 	scale = get_scale(units)
@@ -89,6 +93,7 @@ def process_weather(location, units, symbols):
 	sunrise = winfo['sys']['sunrise']
 	sunset = winfo['sys']['sunset']
 	wind = winfo['wind']['speed']
+	wind_deg = winfo['wind']['deg']
 	dt = winfo['dt']
 
 	# Set the period.
@@ -110,8 +115,8 @@ def process_weather(location, units, symbols):
 	write('Humidity %s%s %s %s%% \n%s ' % (DELIM, DATA_COL, humidity, SYM_COL,
 		TEXT_COL))
 
-	write('Wind %s%s %s %s%s \n%s ' % (DELIM, DATA_COL, wind, SYM_COL,
-		speed_unit, TEXT_COL))
+	write('Wind %s%s %s %s%s %s(%s)\n%s ' % (DELIM, DATA_COL, wind, SYM_COL,
+		speed_unit, SND_COL, get_wind_dir(wind_deg), TEXT_COL))
 
 	write('Pressure %s%s %s %shPa' % (DELIM, DATA_COL, pressure, SYM_COL))
 	print RESET
