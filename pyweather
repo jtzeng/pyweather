@@ -85,7 +85,11 @@ def process_weather(location, units, symbols):
 	winfo = json.loads(lines)
 
 	# Process weather data.
+	if winfo.has_key('message'):
+		print winfo['message']
+		return
 	city = winfo['name']
+	country = winfo['sys']['country']
 	temp = winfo['main']['temp']
 	humidity = winfo['main']['humidity']
 	pressure = winfo['main']['pressure']
@@ -108,8 +112,8 @@ def process_weather(location, units, symbols):
 	tms = time.strftime(TIME_FMT, time.localtime(dt))
 	write('Time updated %s%s %s \n%s ' % (DELIM, DATA_COL, tms, TEXT_COL))
 
-	write('Current weather in %s%s %s%s %s %s%s %s  %s%s \n%s ' % (CITY_COL,
-		city, DELIM, DATA_COL, temp, SYM_COL, scale, icon, SND_COL,
+	write('Current weather in %s%s, %s %s%s %s %s%s %s  %s%s \n%s ' % (CITY_COL,
+		city, country, DELIM, DATA_COL, temp, SYM_COL, scale, icon, SND_COL,
 		period, TEXT_COL))
 
 	write('Humidity %s%s %s %s%% \n%s ' % (DELIM, DATA_COL, humidity, SYM_COL,
