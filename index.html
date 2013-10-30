@@ -34,7 +34,7 @@
         <h2>
 <a name="description" class="anchor" href="#description"><span class="octicon octicon-link"></span></a>Description</h2>
 
-<p>PyWeather is a script for displaying the current weather conditions in your terminal, with support for ANSI colors and Unicode symbols. It is a Python port of AnsiWeather, which is developed by Frederic Cambus and can be found here: <a href="https://github.com/fcambus/ansiweather">https://github.com/fcambus/ansiweather</a>.</p>
+<p>PyWeather is a script for displaying the current weather conditions in your terminal, with support for ANSI colors and Unicode symbols. It originated as a Python port of AnsiWeather, which is developed by Frederic Cambus and can be found here: <a href="https://github.com/fcambus/ansiweather">https://github.com/fcambus/ansiweather</a>; however, PyWeather's status as an exact derivative of AnsiWeather is no longer ongoing. It is currently experimental and may deviate from the original repo, although new commits and concepts may still be adopted at any time.</p>
 
 <p><img src="http://oi43.tinypic.com/swtouo.jpg" alt="PyWeather Screenshot"></p>
 
@@ -49,36 +49,29 @@
 <li>Python 2.7</li>
 </ul><p>The intent in creating PyWeather is to offer an alternative which has only one dependency: Python. A standard Python installation (which is prevalent and offered on OS X and almost any other *nix box) is all that is needed.</p>
 
+<p>It should also work on Windows, although there is currently no support for Unicode and console colors.</p>
+
 <h2>
 <a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
 
-<p>After cloning the repository, simply invoke the script by typing:</p>
+<pre><code>./pyweather [-u imperial|metric|kelvin] [-t] city[,country]
+</code></pre>
 
-<pre><code>./pyweather
+<p>Use the '-t' flag to disable symbols.</p>
+
+<p>The final argument, which is required, can be done in a numerous amount of ways. The country or country code is usually optional, but will help the weather API reduce ambiguity.</p>
+
+<p>You can also discard the country or country code, as the script now prints out the name of the country.</p>
+
+<p>For example:</p>
+
+<pre><code>./pyweather -u metric "New York" "Beijing" "London" "Rome,IT"
 </code></pre>
 
 <h2>
-<a name="configuration" class="anchor" href="#configuration"><span class="octicon octicon-link"></span></a>Configuration</h2>
+<a name="contributing" class="anchor" href="#contributing"><span class="octicon octicon-link"></span></a>Contributing</h2>
 
-<p>The following configuration options are available and should be set according to your location and preferences.</p>
-
-<p>Config options can also be set in ~/.pyweatherrc</p>
-
-<p>Example : <code>~/.pyweatherrc</code></p>
-
-<pre><code>[main]
-location: New York,NY
-units: metric
-symbols: yes
-
-[colors]
-...
-
-[icons]
-...
-</code></pre>
-
-<p>Other options can be found in the script; they are easy to set and self-explanatory.</p>
+<p>Help contribute to PyWeather by starring the repo, sharing it, submitting a pull request or posting an issue! :)</p>
 
 <h2>
 <a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h2>
