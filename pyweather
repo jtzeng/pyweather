@@ -1,9 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# Port of 'ansiweather': https://github.com/fcambus/ansiweather
+# https://github.com/wktr/pyweather
 
 import getopt
 import json
+import platform
 import sys
 import time
 import urllib2
@@ -37,6 +38,10 @@ FOG = '\xe2\x96\x92'
 MIST = '\033[37m\xe2\x96\x92'
 SNOW = '\033[37m\xe2\x9d\x84'
 THUNDERSTORM = '\033[33m\xe2\x9a\xa1'
+
+if platform.system() == 'Windows':
+	BG_COL = TEXT_COL = SND_COL = DATA_COL = CITY_COL = SYM_COL = RESET = ''
+	DELIM = '=>'
 
 def get_scale(units):
 	conv = {'imperial': 'F', 'metric': 'C'}
@@ -136,6 +141,8 @@ if __name__ == '__main__':
 			units = val
 		elif opt == '-t':
 			symbols = False
+	if platform.system() == 'Windows':
+		symbols = False
 	if not args:
 		print ('usage: %s [-u imperial|metric|kelvin] [-t]'
 			+ ' city[,country]') % sys.argv[0]
