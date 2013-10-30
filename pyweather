@@ -60,6 +60,7 @@ def get_icon(period, sky, units):
 		'Clear': MOON if period == 'Night' else SUN,
 		'Clouds': CLOUDS,
 		'Rain': RAIN,
+		'Drizzle': RAIN,
 		'Fog': FOG,
 		'Mist': MIST,
 		'Snow': SNOW,
