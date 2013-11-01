@@ -31,14 +31,14 @@ DELIM = '%s=>' % MAGENTA
 CITY_COL = RED
 SYM_COL = GREEN
 
-SUN = '\033[33;1m\xe2\x98\x80'
-MOON = '\033[36m\xe2\x98\xbd'
-CLOUDS = '\033[37;1m\xe2\x98\x81'
-RAIN = '\xe2\x98\x94'
-FOG = '\xe2\x96\x92'
-MIST = '\033[37m\xe2\x96\x92'
-SNOW = '\033[37m\xe2\x9d\x84'
-THUNDERSTORM = '\033[33m\xe2\x9a\xa1'
+SUN = '%s\xe2\x98\x80' % YELLOW
+MOON = '%s\xe2\x98\xbd' % CYAN
+CLOUDS = '%s\xe2\x98\x81' % WHITE
+RAIN = '%s\xe2\x98\x94' % BLUE
+FOG = '%s\xe2\x96\x92' % GREEN
+MIST = '%s\xe2\x96\x92' % WHITE
+SNOW = '%s\xe2\x9d\x84' % WHITE
+THUNDERSTORM = '%s\xe2\x9a\xa1' % YELLOW
 
 if platform.system() == 'Windows':
 	BG_COL = TEXT_COL = SND_COL = DATA_COL = CITY_COL = SYM_COL = RESET = ''
@@ -70,6 +70,7 @@ def get_icon(period, sky, units):
 		'Drizzle': RAIN,
 		'Fog': FOG,
 		'Mist': MIST,
+		'Haze': FOG,
 		'Snow': SNOW,
 		'Thunderstorm': THUNDERSTORM
 	}
