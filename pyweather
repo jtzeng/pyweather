@@ -45,7 +45,8 @@ if platform.system() == 'Windows':
 
 def get_scale(units):
 	conv = {'imperial': 'F', 'metric': 'C'}
-	return u'\u00b0%s' % (conv[units] if conv.has_key(units) else 'K')
+	sym = '\xc2\xb0'.decode('utf-8')
+	return '%s%s' % (sym, conv[units] if conv.has_key(units) else 'K')
 
 def get_speed_unit(units):
 	return 'mph' if units == 'imperial' else 'm/s'
@@ -118,9 +119,9 @@ def process_weather(location, units, symbols):
 	tms = time.strftime(TIME_FMT, time.localtime(dt))
 	write('Time updated %s%s %s \n%s ' % (DELIM, DATA_COL, tms, TEXT_COL))
 
-	write('Current weather in %s%s, %s %s%s %s %s%s %s  %s%s \n%s ' % (CITY_COL,
+	write((u'Current weather in %s%s, %s %s%s %s %s%s %s  %s%s \n%s ' % (CITY_COL,
 		city, country, DELIM, DATA_COL, temp, SYM_COL, scale, icon, SND_COL,
-		period, TEXT_COL))
+		period, TEXT_COL)).encode('utf-8'))
 
 	write('Humidity %s%s %s %s%% \n%s ' % (DELIM, DATA_COL, humidity, SYM_COL,
 		TEXT_COL))
