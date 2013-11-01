@@ -2,7 +2,7 @@
 
 PyWeather is a script for displaying the current weather conditions in your terminal, with support for ANSI colors and Unicode symbols. It originated as a Python port of AnsiWeather, which is developed by Frederic Cambus and can be found here: https://github.com/fcambus/ansiweather; however, PyWeather's status as an exact derivative of AnsiWeather is no longer ongoing. It is currently experimental and may deviate from the original repo, although new commits and concepts may still be adopted at any time.
 
-![PyWeather Screenshot](http://oi43.tinypic.com/swtouo.jpg)
+![PyWeather Screenshot](http://oi44.tinypic.com/2i2am2s.jpg)
 
 Weather data comes from the `OpenWeatherMap` free weather API.
 
@@ -18,7 +18,9 @@ It should also work on Windows, although there is currently no support for Unico
 
 ## Usage
 
-	./pyweather [-u imperial|metric|kelvin] [-t] city[,country]
+	./pyweather [-u imperial|metric|kelvin] [-t] [-f] city[,country]
+
+To get a weekly forecast in addition to the current weather, use the '-f' flag.
 
 Use the '-t' flag to disable symbols.
 
