@@ -41,155 +41,155 @@ SNOW = '%s\xe2\x9d\x84' % WHITE
 THUNDERSTORM = '%s\xe2\x9a\xa1' % YELLOW
 
 if platform.system() == 'Windows':
-	BG_COL = TEXT_COL = SND_COL = DATA_COL = CITY_COL = SYM_COL = RESET = ''
-	DELIM = '=>'
+    BG_COL = TEXT_COL = SND_COL = DATA_COL = CITY_COL = SYM_COL = RESET = ''
+    DELIM = '=>'
 
 def get_scale(units):
-	conv = {'imperial': 'F', 'metric': 'C'}
-	sym = '\xc2\xb0'.decode('utf-8')
-	return '%s%s' % (sym, conv[units] if conv.has_key(units) else 'K')
+    conv = {'imperial': 'F', 'metric': 'C'}
+    sym = '\xc2\xb0'.decode('utf-8')
+    return '%s%s' % (sym, conv[units] if conv.has_key(units) else 'K')
 
 def get_speed_unit(units):
-	return 'mph' if units == 'imperial' else 'm/s'
+    return 'mph' if units == 'imperial' else 'm/s'
 
 def get_period(sunrise, sunset):
-	now = int(time.time())
-	return 'Night' if now >= sunset or now <= sunrise else 'Day'
+    now = int(time.time())
+    return 'Night' if now >= sunset or now <= sunrise else 'Day'
 
 def get_api_data(command, location, units):
-	u = urllib2.urlopen(API_URL % (command, location, units))
-	lines = u.read()
-	u.close()
-	return lines
+    u = urllib2.urlopen(API_URL % (command, location, units))
+    lines = u.read()
+    u.close()
+    return lines
 
 def get_icon(period, sky, units):
-	conv = {
-		'Clear': MOON if period == 'Night' else SUN,
-		'Clouds': CLOUDS,
-		'Rain': RAIN,
-		'Drizzle': RAIN,
-		'Fog': FOG,
-		'Mist': MIST,
-		'Haze': FOG,
-		'Snow': SNOW,
-		'Thunderstorm': THUNDERSTORM
-	}
-	if not symbols:
-		return sky
-	return conv[sky].decode('utf-8') if conv.has_key(sky) else sky
+    conv = {
+        'Clear': MOON if period == 'Night' else SUN,
+        'Clouds': CLOUDS,
+        'Rain': RAIN,
+        'Drizzle': RAIN,
+        'Fog': FOG,
+        'Mist': MIST,
+        'Haze': FOG,
+        'Snow': SNOW,
+        'Thunderstorm': THUNDERSTORM
+    }
+    if not symbols:
+        return sky
+    return conv[sky].decode('utf-8') if conv.has_key(sky) else sky
 
 def get_wind_dir(wind_deg):
-	directions = 'N NNE NE ENE E ESE SE SSE S SSW SW WSW W WNW NW NNW'.split()
-	return directions[int((wind_deg + 11.25) / 22.5 % 16)]
+    directions = 'N NNE NE ENE E ESE SE SSE S SSW SW WSW W WNW NW NNW'.split()
+    return directions[int((wind_deg + 11.25) / 22.5 % 16)]
 
 def process_forecast(location, units, symbols):
-	lines = get_api_data('forecast/daily', location, units)
-	winfo = json.loads(lines)
+    lines = get_api_data('forecast/daily', location, units)
+    winfo = json.loads(lines)
 
-	cod = winfo['cod']
-	if cod == '404':
-		print 'City not found.'
-		return
-	city = winfo['city']['name']
-	country = winfo['city']['country']
-	lst = winfo['list']
-	scale = get_scale(units)
-	period = 'Day'
+    cod = winfo['cod']
+    if cod == '404':
+        print 'City not found.'
+        return
+    city = winfo['city']['name']
+    country = winfo['city']['country']
+    lst = winfo['list']
+    scale = get_scale(units)
+    period = 'Day'
 
-	write = sys.stdout.write
-	write('%s%s ' % (BG_COL, TEXT_COL))
-	write('Current forecast for %s%s, %s\n%s' % (CITY_COL,
-		city, country, TEXT_COL))
+    write = sys.stdout.write
+    write('%s%s ' % (BG_COL, TEXT_COL))
+    write('Current forecast for %s%s, %s\n%s' % (CITY_COL,
+        city, country, TEXT_COL))
 
-	for val in lst:
-		dt = val['dt']
-		temp_min = val['temp']['min']
-		temp_max = val['temp']['max']
-		sky = val['weather'][0]['main']
-		icon = get_icon(period, sky, units)
+    for val in lst:
+        dt = val['dt']
+        temp_min = val['temp']['min']
+        temp_max = val['temp']['max']
+        sky = val['weather'][0]['main']
+        icon = get_icon(period, sky, units)
 
-		tms = time.strftime(FC_TIME_FMT, time.localtime(dt))
-		write((u' %s%s %s %s%3d %s%s %s/ %s%3d %s%s  %s\n%s' % (tms,
-			TEXT_COL, DELIM, DATA_COL, temp_min, SYM_COL, scale, TEXT_COL,
-			DATA_COL, temp_max, SYM_COL, scale, icon, TEXT_COL))
-			.encode('utf-8'))
-	write(RESET)
+        tms = time.strftime(FC_TIME_FMT, time.localtime(dt))
+        write((u' %s%s %s %s%3d %s%s %s/ %s%3d %s%s  %s\n%s' % (tms,
+            TEXT_COL, DELIM, DATA_COL, temp_min, SYM_COL, scale, TEXT_COL,
+            DATA_COL, temp_max, SYM_COL, scale, icon, TEXT_COL))
+            .encode('utf-8'))
+    write(RESET)
 
 def process_weather(location, units, symbols):
-	# Set the scale.
-	scale = get_scale(units)
+    # Set the scale.
+    scale = get_scale(units)
 
-	# Set the wind speed unit.
-	speed_unit = get_speed_unit(units)
+    # Set the wind speed unit.
+    speed_unit = get_speed_unit(units)
 
-	# Fetch weather data.
-	lines = get_api_data('weather', location, units)
-	winfo = json.loads(lines)
+    # Fetch weather data.
+    lines = get_api_data('weather', location, units)
+    winfo = json.loads(lines)
 
-	# Process weather data.
-	cod = winfo['cod']
-	if cod == '404':
-		print 'City not found.'
-		return
-	city = winfo['name']
-	country = winfo['sys']['country']
-	temp = winfo['main']['temp']
-	humidity = winfo['main']['humidity']
-	pressure = winfo['main']['pressure']
-	sky = winfo['weather'][0]['main']
-	sunrise = winfo['sys']['sunrise']
-	sunset = winfo['sys']['sunset']
-	wind = winfo['wind']['speed']
-	wind_deg = winfo['wind']['deg']
-	dt = winfo['dt']
+    # Process weather data.
+    cod = winfo['cod']
+    if cod == '404':
+        print 'City not found.'
+        return
+    city = winfo['name']
+    country = winfo['sys']['country']
+    temp = winfo['main']['temp']
+    humidity = winfo['main']['humidity']
+    pressure = winfo['main']['pressure']
+    sky = winfo['weather'][0]['main']
+    sunrise = winfo['sys']['sunrise']
+    sunset = winfo['sys']['sunset']
+    wind = winfo['wind']['speed']
+    wind_deg = winfo['wind']['deg']
+    dt = winfo['dt']
 
-	# Set the period.
-	period = get_period(sunrise, sunset)
+    # Set the period.
+    period = get_period(sunrise, sunset)
 
-	# Set the icons.
-	icon = get_icon(period, sky, units)
+    # Set the icons.
+    icon = get_icon(period, sky, units)
 
-	write = sys.stdout.write
-	write('%s%s ' % (BG_COL, TEXT_COL))
+    write = sys.stdout.write
+    write('%s%s ' % (BG_COL, TEXT_COL))
 
-	tms = time.strftime(W_TIME_FMT, time.localtime(dt))
-	write('Time updated %s%s %s \n%s ' % (DELIM, DATA_COL, tms, TEXT_COL))
+    tms = time.strftime(W_TIME_FMT, time.localtime(dt))
+    write('Time updated %s%s %s \n%s ' % (DELIM, DATA_COL, tms, TEXT_COL))
 
-	write((u'Current weather in %s%s, %s %s%s %s %s%s %s  %s%s \n%s ' % (CITY_COL,
-		city, country, DELIM, DATA_COL, temp, SYM_COL, scale, icon, SND_COL,
-		period, TEXT_COL)).encode('utf-8'))
+    write((u'Current weather in %s%s, %s %s%s %s %s%s %s  %s%s \n%s ' % (CITY_COL,
+        city, country, DELIM, DATA_COL, temp, SYM_COL, scale, icon, SND_COL,
+        period, TEXT_COL)).encode('utf-8'))
 
-	write('Humidity %s%s %s %s%% \n%s ' % (DELIM, DATA_COL, humidity, SYM_COL,
-		TEXT_COL))
+    write('Humidity %s%s %s %s%% \n%s ' % (DELIM, DATA_COL, humidity, SYM_COL,
+        TEXT_COL))
 
-	write('Wind %s%s %s %s%s %s(%s)\n%s ' % (DELIM, DATA_COL, wind, SYM_COL,
-		speed_unit, SND_COL, get_wind_dir(wind_deg), TEXT_COL))
+    write('Wind %s%s %s %s%s %s(%s)\n%s ' % (DELIM, DATA_COL, wind, SYM_COL,
+        speed_unit, SND_COL, get_wind_dir(wind_deg), TEXT_COL))
 
-	write('Pressure %s%s %s %shPa' % (DELIM, DATA_COL, pressure, SYM_COL))
-	print RESET
+    write('Pressure %s%s %s %shPa' % (DELIM, DATA_COL, pressure, SYM_COL))
+    print RESET
 
 # Display current weather.
 if __name__ == '__main__':
-	opts, args = getopt.getopt(sys.argv[1:], 'u:tf')
-	units = 'imperial'
-	symbols = True
-	forecast = False
-	for opt, val in opts:
-		if opt == '-u':
-			units = val
-		elif opt == '-t':
-			symbols = False
-		elif opt == '-f':
-			forecast = True
-	if platform.system() == 'Windows':
-		symbols = False
-	if not args:
-		print ('usage: %s [-u imperial|metric|kelvin] [-t] [-f]'
-			+ ' city[,country]') % sys.argv[0]
-		print 'example: %s -u metric "New York" "Beijing" "London" "Rome,IT"' % sys.argv[0]
-		exit()
-	for location in args:
-		process_weather(location, units, symbols)
-		print ''
-		if forecast:
-			process_forecast(location, units, symbols)
+    opts, args = getopt.getopt(sys.argv[1:], 'u:tf')
+    units = 'imperial'
+    symbols = True
+    forecast = False
+    for opt, val in opts:
+        if opt == '-u':
+            units = val
+        elif opt == '-t':
+            symbols = False
+        elif opt == '-f':
+            forecast = True
+    if platform.system() == 'Windows':
+        symbols = False
+    if not args:
+        print ('usage: %s [-u imperial|metric|kelvin] [-t] [-f]'
+            + ' city[,country]') % sys.argv[0]
+        print 'example: %s -u metric "New York" "Beijing" "London" "Rome,IT"' % sys.argv[0]
+        exit()
+    for location in args:
+        process_weather(location, units, symbols)
+        if forecast:
+            print ''
+            process_forecast(location, units, symbols)
