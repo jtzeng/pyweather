@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# https://github.com/wktr/pyweather
+# https://github.com/jtzeng/pyweather
 
 import getopt
 import json
@@ -44,10 +44,23 @@ if platform.system() == 'Windows':
     BG_COL = TEXT_COL = SND_COL = DATA_COL = CITY_COL = SYM_COL = RESET = ''
     DELIM = '=>'
 
+def usage():
+    s = 'usage: %s [-u imperial|metric|kelvin] [-t] [-f] city[,country]'
+    print s % sys.argv[0]
+
+def example():
+    s = 'example: %s -u metric "New York" "Beijing" "London" "Rome,IT"'
+    print s % sys.argv[0]
+
+def help_and_die():
+    usage()
+    example()
+    exit()
+
 def get_scale(units):
     conv = {'imperial': 'F', 'metric': 'C'}
     sym = '\xc2\xb0'.decode('utf-8')
-    return '%s%s' % (sym, conv[units] if conv.has_key(units) else 'K')
+    return '%s%s' % (sym, conv[units] if units in conv else 'K')
 
 def get_speed_unit(units):
     return 'mph' if units == 'imperial' else 'm/s'
@@ -76,7 +89,7 @@ def get_icon(period, sky, units):
     }
     if not symbols:
         return sky
-    return conv[sky].decode('utf-8') if conv.has_key(sky) else sky
+    return conv[sky].decode('utf-8') if sky in conv else sky
 
 def get_wind_dir(wind_deg):
     directions = 'N NNE NE ENE E ESE SE SSE S SSW SW WSW W WNW NW NNW'.split()
@@ -88,7 +101,7 @@ def process_forecast(location, units, symbols):
 
     cod = winfo['cod']
     if cod == '404':
-        print 'City not found.'
+        print 'City not found: %s' % location
         return
     city = winfo['city']['name']
     country = winfo['city']['country']
@@ -98,8 +111,8 @@ def process_forecast(location, units, symbols):
 
     write = sys.stdout.write
     write('%s%s ' % (BG_COL, TEXT_COL))
-    write('Current forecast for %s%s, %s\n%s' % (CITY_COL,
-        city, country, TEXT_COL))
+    write('Current forecast for %s%s, %s\n%s' % (
+        CITY_COL, city, country, TEXT_COL))
 
     for val in lst:
         dt = val['dt']
@@ -109,8 +122,8 @@ def process_forecast(location, units, symbols):
         icon = get_icon(period, sky, units)
 
         tms = time.strftime(FC_TIME_FMT, time.localtime(dt))
-        write((u' %s%s %s %s%3d %s%s %s/ %s%3d %s%s  %s\n%s' % (tms,
-            TEXT_COL, DELIM, DATA_COL, temp_min, SYM_COL, scale, TEXT_COL,
+        write((u' %s%s %s %s%3d %s%s %s/ %s%3d %s%s  %s\n%s' % (
+            tms, TEXT_COL, DELIM, DATA_COL, temp_min, SYM_COL, scale, TEXT_COL,
             DATA_COL, temp_max, SYM_COL, scale, icon, TEXT_COL))
             .encode('utf-8'))
     write(RESET)
@@ -129,7 +142,7 @@ def process_weather(location, units, symbols):
     # Process weather data.
     cod = winfo['cod']
     if cod == '404':
-        print 'City not found.'
+        print 'City not found: %s' % location
         return
     city = winfo['name']
     country = winfo['sys']['country']
@@ -155,21 +168,25 @@ def process_weather(location, units, symbols):
     tms = time.strftime(W_TIME_FMT, time.localtime(dt))
     write('Time updated %s%s %s \n%s ' % (DELIM, DATA_COL, tms, TEXT_COL))
 
-    write((u'Current weather in %s%s, %s %s%s %s %s%s %s  %s%s \n%s ' % (CITY_COL,
-        city, country, DELIM, DATA_COL, temp, SYM_COL, scale, icon, SND_COL,
-        period, TEXT_COL)).encode('utf-8'))
+    write((u'Current weather in %s%s, %s %s%s %s %s%s %s  %s%s \n%s ' % (
+        CITY_COL, city, country, DELIM, DATA_COL, temp, SYM_COL, scale, icon,
+        SND_COL, period, TEXT_COL)).encode('utf-8'))
 
-    write('Humidity %s%s %s %s%% \n%s ' % (DELIM, DATA_COL, humidity, SYM_COL,
-        TEXT_COL))
+    write('Humidity %s%s %s %s%% \n%s ' % (
+        DELIM, DATA_COL, humidity, SYM_COL, TEXT_COL))
 
-    write('Wind %s%s %s %s%s %s(%s)\n%s ' % (DELIM, DATA_COL, wind, SYM_COL,
-        speed_unit, SND_COL, get_wind_dir(wind_deg), TEXT_COL))
+    write('Wind %s%s %s %s%s %s(%s)\n%s ' % (
+        DELIM, DATA_COL, wind, SYM_COL, speed_unit, SND_COL,
+        get_wind_dir(wind_deg), TEXT_COL))
 
     write('Pressure %s%s %s %shPa' % (DELIM, DATA_COL, pressure, SYM_COL))
     print RESET
 
 # Display current weather.
 if __name__ == '__main__':
+    if sys.argv[1:] and sys.argv[1] in ['-h', '-help', '--help']:
+        help_and_die()
+    # ?????
     opts, args = getopt.getopt(sys.argv[1:], 'u:tf')
     units = 'imperial'
     symbols = True
@@ -184,10 +201,7 @@ if __name__ == '__main__':
     if platform.system() == 'Windows':
         symbols = False
     if not args:
-        print ('usage: %s [-u imperial|metric|kelvin] [-t] [-f]'
-            + ' city[,country]') % sys.argv[0]
-        print 'example: %s -u metric "New York" "Beijing" "London" "Rome,IT"' % sys.argv[0]
-        exit()
+        help_and_die()
     for location in args:
         process_weather(location, units, symbols)
         if forecast:
